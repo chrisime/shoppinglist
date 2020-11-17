@@ -8,14 +8,18 @@
 * provide a list of items so a user only needs to click on them
 * share list with someone and/or invite others
 * have a pantry management system
+  * categories
+  * bought on
+  * bought how many times
 * statistics of items
+  * beverages
   * vegetables
   * meat
   * bread
   * dairy
 * recommendations based on
   * what's in the pantry and
-  * what a user recently/oftentimes used
+  * what a user recently/oftentimes used/bought
 * language support (de, en, ...)
 
 ## Backend
@@ -37,4 +41,5 @@
 ### Angular 10/11
 
 * material angular
+* l10n/i18n
 
