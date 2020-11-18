@@ -43,3 +43,7 @@
 * material angular
 * l10n/i18n
 
+## Mobile App (later, end of Q1/2021 or sometime in Q2/2020)
+
+* flutter based (since we want to learn flutter anyway...)
+
