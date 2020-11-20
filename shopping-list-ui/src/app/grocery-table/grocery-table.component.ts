@@ -5,6 +5,8 @@ import { MatTable }                                    from '@angular/material/t
 import { GroceryTableDataSource }                      from './grocery-table-datasource';
 import { GroceryService }                              from './grocery.service';
 import { GroceryItem }                                 from './model/grocery-item';
+import { MatDialog }                                   from '@angular/material/dialog';
+import { DialogBoxComponent }                          from '../dialog-box/dialog-box.component';
 
 @Component(
     {
@@ -17,7 +19,7 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
 
     dataSource: GroceryTableDataSource;
 
-    readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name'];
+    readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name', 'action'];
 
     @ViewChild(MatPaginator)
     private paginator: MatPaginator;
@@ -26,7 +28,9 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
     @ViewChild(MatTable)
     private table: MatTable<GroceryItem>;
 
-    constructor(private groceryService: GroceryService) {
+    private selectedRow = null;
+
+    constructor(private groceryService: GroceryService, private dialog: MatDialog) {
     }
 
     ngOnInit(): void {
@@ -38,6 +42,58 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.table.dataSource = this.dataSource;
+    }
+
+    openDialog(action: string, obj): void {
+        obj.action = action;
+        const dialogRef = this.dialog.open(DialogBoxComponent, {
+            width: '250px',
+            data:  obj
+        });
+
+        dialogRef.afterClosed()
+                 .subscribe(result => {
+                     if (result.event === 'Add') {
+                         this.addRowData(result.data);
+                     } else if (result.event === 'Update') {
+                         this.updateRowData(result.data);
+                     } else if (result.event === 'Delete') {
+                         this.deleteRowData(result.data);
+                     }
+                 });
+    }
+
+    addRowData(rowObject: GroceryItem): void {
+        const date = new Date();
+        // this.dataSource.push({
+        //                          id:   date.getTime(),
+        //                          name: rowObject.name
+        //                      });
+        this.table.renderRows();
+
+    }
+
+    updateRowData(rowObject: GroceryItem): void {
+        // this.dataSource = this.dataSource.filter((value, key) => {
+        //     if (value.name === rowObject.name) {
+        //         value.name = rowObject.name;
+        //     }
+        //     return true;
+        // });
+    }
+
+    deleteRowData(rowObject: GroceryItem): void {
+        // this.dataSource = this.dataSource.filter((value, key) => {
+        //     return value.name !== rowObject.name;
+        // });
+    }
+
+    toggleRow(row: number): void {
+        this.selectedRow = this.selectedRow === row ? null : row;
+    }
+
+    isSelected(row: number): boolean {
+        return row === this.selectedRow;
     }
 
 }
