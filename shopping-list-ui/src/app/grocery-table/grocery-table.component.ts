@@ -1,11 +1,12 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog }                                   from '@angular/material/dialog';
 import { MatPaginator }                                from '@angular/material/paginator';
 import { MatSort }                                     from '@angular/material/sort';
 import { MatTable }                                    from '@angular/material/table';
+
 import { GroceryTableDataSource }                      from './grocery-table-datasource';
 import { GroceryService }                              from './grocery.service';
 import { GroceryItem }                                 from './model/grocery-item';
-import { MatDialog }                                   from '@angular/material/dialog';
 import { DialogBoxComponent }                          from '../dialog-box/dialog-box.component';
 
 @Component(
@@ -17,8 +18,6 @@ import { DialogBoxComponent }                          from '../dialog-box/dialo
 )
 export class GroceryTableComponent implements AfterViewInit, OnInit {
 
-    dataSource: GroceryTableDataSource;
-
     readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name', 'action'];
 
     @ViewChild(MatPaginator)
@@ -28,23 +27,29 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
     @ViewChild(MatTable)
     private table: MatTable<GroceryItem>;
 
+    private groceryTableDataSource: GroceryTableDataSource;
+
     private selectedRow = null;
 
     constructor(private groceryService: GroceryService, private dialog: MatDialog) {
     }
 
     ngOnInit(): void {
-        this.dataSource = new GroceryTableDataSource(this.groceryService);
-        this.dataSource.loadGroceries();
+        this.groceryTableDataSource = new GroceryTableDataSource(this.groceryService);
+        this.groceryTableDataSource.getGroceries();
     }
 
     ngAfterViewInit(): void {
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.table.dataSource = this.dataSource;
+        this.groceryTableDataSource.sort = this.sort;
+        this.groceryTableDataSource.paginator = this.paginator;
+        this.table.dataSource = this.groceryTableDataSource;
     }
 
-    openDialog(action: string, obj): void {
+    get rows(): number {
+        return this.groceryTableDataSource.count;
+    }
+
+    openDialog(action: 'Add' | 'Update' | 'Delete', obj): void {
         obj.action = action;
         const dialogRef = this.dialog.open(DialogBoxComponent, {
             width: '250px',
@@ -63,18 +68,12 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
                  });
     }
 
-    addRowData(rowObject: GroceryItem): void {
-        const date = new Date();
-        // this.dataSource.push({
-        //                          id:   date.getTime(),
-        //                          name: rowObject.name
-        //                      });
-        this.table.renderRows();
-
+    addRowData(groceryItem: GroceryItem): void {
+        this.groceryTableDataSource.addGroceries(groceryItem);
     }
 
     updateRowData(rowObject: GroceryItem): void {
-        // this.dataSource = this.dataSource.filter((value, key) => {
+        // this.groceryTableDataSource = this.groceryTableDataSource.filter((value, key) => {
         //     if (value.name === rowObject.name) {
         //         value.name = rowObject.name;
         //     }
@@ -83,7 +82,7 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
     }
 
     deleteRowData(rowObject: GroceryItem): void {
-        // this.dataSource = this.dataSource.filter((value, key) => {
+        // this.groceryTableDataSource = this.groceryTableDataSource.filter((value, key) => {
         //     return value.name !== rowObject.name;
         // });
     }
