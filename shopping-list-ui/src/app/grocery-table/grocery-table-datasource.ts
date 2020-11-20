@@ -1,10 +1,10 @@
-import { DataSource }                         from '@angular/cdk/collections';
-import { MatPaginator }                       from '@angular/material/paginator';
+import { DataSource }                             from '@angular/cdk/collections';
+import { MatPaginator }                           from '@angular/material/paginator';
 import { MatSort }                                from '@angular/material/sort';
-import { catchError, finalize, map }              from 'rxjs/operators';
+import { catchError, map }                        from 'rxjs/operators';
 import { BehaviorSubject, merge, Observable, of } from 'rxjs';
 import { GroceryService }                         from './grocery.service';
-import { GroceryItem }                        from './model/grocery-item';
+import { GroceryItem }                            from './model/grocery-item';
 
 /**
  * Data source for the GroceryTable view. This class should
@@ -25,13 +25,14 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
         super();
     }
 
-    loadGroceries(): void {
+    getGroceries(): void {
         this.groceryService
             .getGroceries()
-            .subscribe((grocery: GroceryItem[]) => {
-                this.grocerySubject.next(grocery);
+            .pipe(catchError(() => of(Array<GroceryItem>())))
+            .subscribe((groceries) => {
+                this.grocerySubject.next(groceries);
 
-                this.count = grocery.length;
+                this.count = groceries.length;
             });
     }
 
