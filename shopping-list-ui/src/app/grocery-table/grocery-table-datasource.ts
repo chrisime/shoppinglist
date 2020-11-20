@@ -1,9 +1,9 @@
 import { DataSource }                         from '@angular/cdk/collections';
 import { MatPaginator }                       from '@angular/material/paginator';
-import { MatSort }                            from '@angular/material/sort';
-import { map }                                from 'rxjs/operators';
-import { BehaviorSubject, merge, Observable } from 'rxjs';
-import { GroceryService }                     from './grocery.service';
+import { MatSort }                                from '@angular/material/sort';
+import { catchError, finalize, map }              from 'rxjs/operators';
+import { BehaviorSubject, merge, Observable, of } from 'rxjs';
+import { GroceryService }                         from './grocery.service';
 import { GroceryItem }                        from './model/grocery-item';
 
 /**
@@ -14,6 +14,7 @@ import { GroceryItem }                        from './model/grocery-item';
 export class GroceryTableDataSource extends DataSource<GroceryItem> {
 
     private grocerySubject = new BehaviorSubject<GroceryItem[]>([]);
+    private groceryObservable = this.grocerySubject.asObservable();
 
     paginator: MatPaginator;
     sort: MatSort;
@@ -34,6 +35,17 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
             });
     }
 
+    addGroceries(grocery: GroceryItem): void {
+        this.groceryService
+            .getGroceries()
+            .pipe(catchError(() => of(Array<GroceryItem>())))
+            .subscribe((groceries) => {
+                groceries.push(grocery);
+                this.grocerySubject.next(groceries);
+                this.count = groceries.length;
+            });
+    }
+
     /**
      * Connect this data source to the table. The table will only update when
      * the returned stream emits new items.
@@ -43,7 +55,7 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
         // Combine everything that affects the rendered data into one update
         // stream for the data-table to consume.
         const dataMutations = [
-            this.grocerySubject.asObservable(),
+            this.groceryObservable,
             this.paginator.page,
             this.sort.sortChange
         ];
