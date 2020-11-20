@@ -12,9 +12,11 @@ import { GroceryItem }                                 from './model/grocery-ite
                styleUrls:   ['./grocery-table.component.less']
            })
 export class GroceryTableComponent implements AfterViewInit, OnInit {
+
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild(MatTable) table: MatTable<GroceryItem>;
+
     dataSource: GroceryTableDataSource;
 
     /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
