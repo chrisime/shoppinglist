@@ -6,9 +6,6 @@ import { GroceryItem } from './model/grocery-item';
 @Injectable({ providedIn: 'root' })
 export class GroceryService {
 
-    constructor() {
-    }
-
     getGroceries(): Observable<GroceryItem[]> {
         return of(
             [

@@ -6,21 +6,25 @@ import { GroceryTableDataSource }                      from './grocery-table-dat
 import { GroceryService }                              from './grocery.service';
 import { GroceryItem }                                 from './model/grocery-item';
 
-@Component({
-               selector:    'app-grocery-table',
-               templateUrl: './grocery-table.component.html',
-               styleUrls:   ['./grocery-table.component.less']
-           })
+@Component(
+    {
+        selector:    'app-grocery-table',
+        templateUrl: './grocery-table.component.html',
+        styleUrls:   ['./grocery-table.component.less']
+    }
+)
 export class GroceryTableComponent implements AfterViewInit, OnInit {
-
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    @ViewChild(MatSort) sort: MatSort;
-    @ViewChild(MatTable) table: MatTable<GroceryItem>;
 
     dataSource: GroceryTableDataSource;
 
-    /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-    displayedColumns = ['amount', 'name'];
+    readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name'];
+
+    @ViewChild(MatPaginator)
+    private paginator: MatPaginator;
+    @ViewChild(MatSort)
+    private sort: MatSort;
+    @ViewChild(MatTable)
+    private table: MatTable<GroceryItem>;
 
     constructor(private groceryService: GroceryService) {
     }
@@ -35,4 +39,5 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
         this.dataSource.paginator = this.paginator;
         this.table.dataSource = this.dataSource;
     }
+
 }

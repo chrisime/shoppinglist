@@ -17,17 +17,17 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
 
     paginator: MatPaginator;
     sort: MatSort;
-    count: number;
+
+    count = 0;
 
     constructor(private groceryService: GroceryService) {
         super();
-        this.count = 0;
     }
 
     loadGroceries(): void {
         this.groceryService
             .getGroceries()
-            .subscribe(grocery => {
+            .subscribe((grocery: GroceryItem[]) => {
                 this.grocerySubject.next(grocery);
 
                 this.count = grocery.length;
@@ -43,15 +43,13 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
         // Combine everything that affects the rendered data into one update
         // stream for the data-table to consume.
         const dataMutations = [
-            // observableOf(this.data),
             this.grocerySubject.asObservable(),
             this.paginator.page,
             this.sort.sortChange
         ];
 
         return merge(...dataMutations).pipe(map(() => {
-            // return this.getPagedData(this.getSortedData([...this.data]));
-            return this.getPagedData(this.getSortedData([...this.grocerySubject.getValue()]));
+            return this.getPagedData(this.getSortedData([...this.grocerySubject.value]));
         }));
     }
 
@@ -85,8 +83,6 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
             switch (this.sort.active) {
                 case 'name':
                     return compare(a.name, b.name, isAsc);
-                // case 'id':
-                //   return compare(+a.id, +b.id, isAsc);
                 default:
                     return 0;
             }
