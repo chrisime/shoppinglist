@@ -18,7 +18,7 @@ import { DialogBoxComponent }                          from '../dialog-box/dialo
 )
 export class GroceryTableComponent implements AfterViewInit, OnInit {
 
-    readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name', 'action'];
+    readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name', 'action', 'addButton'];
 
     @ViewChild(MatPaginator)
     private paginator: MatPaginator;
