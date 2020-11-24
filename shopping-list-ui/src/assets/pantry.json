@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "amount": 2,
+        "name": "fish",
+        "isSelected": false
+    },
+    {
+        "id": 2,
+        "amount": 1,
+        "name": "ham",
+        "isSelected": false
+    },
+    {
+        "id": 3,
+        "amount": 10,
+        "name": "egg",
+        "isSelected": false
+    }
+]
