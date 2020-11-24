@@ -1,28 +1,63 @@
-import { Injectable }  from '@angular/core';
-import { Observable }  from 'rxjs';
-import { of }          from 'rxjs';
-import { GroceryItem } from './model/grocery-item';
+import { Injectable }                  from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { GroceryItem }                 from './model/grocery-item';
+import { HttpClient }                  from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class GroceryService {
 
-    getGroceries(): Observable<GroceryItem[]> {
-        return of(
-            [
-                {
-                    name:   'fisch',
-                    amount: 1
+    private cnt: number;
+
+    groceries$: Observable<GroceryItem[]>;
+    groceriesSubject = new BehaviorSubject<GroceryItem[]>([]);
+
+    constructor(private httpClient: HttpClient) {
+        this.groceries$ = this.groceriesSubject.asObservable();
+        this.cnt = 0;
+    }
+
+    get count(): number {
+        return this.cnt;
+    }
+
+    getGroceries(): void {
+        this.httpClient
+            .get('./assets/pantry.json')
+            .subscribe(
+                (data: GroceryItem[]) => {
+                    this.groceriesSubject.next(data);
+                    this.cnt = data.length;
                 },
-                {
-                    name:   'Ei',
-                    amount: 10
+                (error) => console.log(error)
+            );
+    }
+
+    addGrocery(grocery: GroceryItem): void {
+        this.httpClient
+            .get('./assets/pantry.json')
+            .subscribe(
+                (data: GroceryItem[]) => {
+                    data.push(grocery);
+                    this.groceriesSubject.next(data);
+
+                    this.cnt++;
                 },
-                {
-                    name:   'Milch',
-                    amount: 2
+                (error) => console.log(error));
+    }
+
+    updateGrocery(grocery: GroceryItem): void {
+        this.httpClient
+            .get('./assets/pantry.json')
+            .subscribe(
+                (data: GroceryItem[]) => {
+                    const found = data.find( current => {
+                        return current.id === grocery.id;
+                    });
+                    found.name = grocery.name;
+
+                    this.groceriesSubject.next(data);
                 }
-            ]
-        );
+            );
     }
 
 }

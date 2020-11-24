@@ -4,10 +4,10 @@ import { MatPaginator }                                from '@angular/material/p
 import { MatSort }                                     from '@angular/material/sort';
 import { MatTable }                                    from '@angular/material/table';
 
-import { GroceryTableDataSource }                      from './grocery-table-datasource';
-import { GroceryService }                              from './grocery.service';
-import { GroceryItem }                                 from './model/grocery-item';
-import { DialogBoxComponent }                          from '../dialog-box/dialog-box.component';
+import { GroceryTableDataSource } from './grocery-table-datasource';
+import { GroceryService }         from './grocery.service';
+import { GroceryItem }            from './model/grocery-item';
+import { DialogBoxComponent }     from '../dialog-box/dialog-box.component';
 
 @Component(
     {
@@ -20,6 +20,8 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
 
     readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name', 'action', 'addButton'];
 
+    readonly highlightedRows: any[];
+
     @ViewChild(MatPaginator)
     private paginator: MatPaginator;
     @ViewChild(MatSort)
@@ -29,14 +31,13 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
 
     private groceryTableDataSource: GroceryTableDataSource;
 
-    private selectedRow = null;
-
     constructor(private groceryService: GroceryService, private dialog: MatDialog) {
+        this.highlightedRows = [];
     }
 
     ngOnInit(): void {
         this.groceryTableDataSource = new GroceryTableDataSource(this.groceryService);
-        this.groceryTableDataSource.getGroceries();
+        this.groceryTableDataSource.groceryService.getGroceries();
     }
 
     ngAfterViewInit(): void {
@@ -46,7 +47,7 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
     }
 
     get rows(): number {
-        return this.groceryTableDataSource.count;
+        return this.groceryTableDataSource.groceryService.count;
     }
 
     openDialog(action: 'Add' | 'Update' | 'Delete', obj): void {
@@ -59,40 +60,32 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
         dialogRef.afterClosed()
                  .subscribe(result => {
                      if (result.event === 'Add') {
-                         this.addRowData(result.data);
+                         this.groceryTableDataSource.groceryService.addGrocery(result.data);
                      } else if (result.event === 'Update') {
-                         this.updateRowData(result.data);
+                         this.groceryTableDataSource.groceryService.updateGrocery(result.data);
+                         // this.table.renderRows();
                      } else if (result.event === 'Delete') {
                          this.deleteRowData(result.data);
                      }
                  });
     }
-
-    addRowData(groceryItem: GroceryItem): void {
-        this.groceryTableDataSource.addGroceries(groceryItem);
-    }
-
-    updateRowData(rowObject: GroceryItem): void {
-        // this.groceryTableDataSource = this.groceryTableDataSource.filter((value, key) => {
-        //     if (value.name === rowObject.name) {
-        //         value.name = rowObject.name;
-        //     }
-        //     return true;
-        // });
-    }
-
     deleteRowData(rowObject: GroceryItem): void {
         // this.groceryTableDataSource = this.groceryTableDataSource.filter((value, key) => {
         //     return value.name !== rowObject.name;
         // });
     }
 
-    toggleRow(row: number): void {
-        this.selectedRow = this.selectedRow === row ? null : row;
+    toggleRow(row: GroceryItem): void {
+        // row.isSelected = !row.isSelected;
+        if (this.highlightedRows.indexOf(row) === -1) {
+            this.highlightedRows.push(row);
+        } else {
+            this.highlightedRows[this.highlightedRows.indexOf(row)] = -1;
+        }
     }
 
-    isSelected(row: number): boolean {
-        return row === this.selectedRow;
+    isSelected(row: GroceryItem): boolean {
+        return this.highlightedRows.indexOf(row) !== -1;
     }
 
 }

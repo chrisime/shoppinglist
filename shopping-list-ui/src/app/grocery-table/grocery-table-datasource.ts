@@ -1,10 +1,10 @@
-import { DataSource }                             from '@angular/cdk/collections';
-import { MatPaginator }                           from '@angular/material/paginator';
-import { MatSort }                                from '@angular/material/sort';
-import { catchError, map }                        from 'rxjs/operators';
-import { BehaviorSubject, merge, Observable, of } from 'rxjs';
-import { GroceryService }                         from './grocery.service';
-import { GroceryItem }                            from './model/grocery-item';
+import { DataSource }        from '@angular/cdk/collections';
+import { MatPaginator }      from '@angular/material/paginator';
+import { MatSort }           from '@angular/material/sort';
+import { map }               from 'rxjs/operators';
+import { merge, Observable } from 'rxjs';
+import { GroceryService }    from './grocery.service';
+import { GroceryItem }       from './model/grocery-item';
 
 /**
  * Data source for the GroceryTable view. This class should
@@ -13,38 +13,11 @@ import { GroceryItem }                            from './model/grocery-item';
  */
 export class GroceryTableDataSource extends DataSource<GroceryItem> {
 
-    private grocerySubject = new BehaviorSubject<GroceryItem[]>([]);
-    private groceryObservable = this.grocerySubject.asObservable();
-
     paginator: MatPaginator;
     sort: MatSort;
 
-    count = 0;
-
-    constructor(private groceryService: GroceryService) {
+    constructor(public groceryService: GroceryService) {
         super();
-    }
-
-    getGroceries(): void {
-        this.groceryService
-            .getGroceries()
-            .pipe(catchError(() => of(Array<GroceryItem>())))
-            .subscribe((groceries) => {
-                this.grocerySubject.next(groceries);
-
-                this.count = groceries.length;
-            });
-    }
-
-    addGroceries(grocery: GroceryItem): void {
-        this.groceryService
-            .getGroceries()
-            .pipe(catchError(() => of(Array<GroceryItem>())))
-            .subscribe((groceries) => {
-                groceries.push(grocery);
-                this.grocerySubject.next(groceries);
-                this.count = groceries.length;
-            });
     }
 
     /**
@@ -56,13 +29,13 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
         // Combine everything that affects the rendered data into one update
         // stream for the data-table to consume.
         const dataMutations = [
-            this.groceryObservable,
+            this.groceryService.groceries$,
             this.paginator.page,
             this.sort.sortChange
         ];
 
         return merge(...dataMutations).pipe(map(() => {
-            return this.getPagedData(this.getSortedData([...this.grocerySubject.value]));
+            return this.getPagedData(this.getSortedData([...this.groceryService.groceriesSubject.value]));
         }));
     }
 
