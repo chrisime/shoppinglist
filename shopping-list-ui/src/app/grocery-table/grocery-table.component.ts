@@ -20,7 +20,7 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
 
     readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name', 'action', 'addButton'];
 
-    readonly highlightedRows: any[];
+    highlightedRows: GroceryItem[];
 
     @ViewChild(MatPaginator)
     private paginator: MatPaginator;
@@ -80,7 +80,11 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
         if (this.highlightedRows.indexOf(row) === -1) {
             this.highlightedRows.push(row);
         } else {
-            this.highlightedRows[this.highlightedRows.indexOf(row)] = -1;
+            const filtered = this.highlightedRows.filter(cur => cur !== row);
+
+            delete this.highlightedRows;
+
+            this.highlightedRows = filtered;
         }
     }
 
