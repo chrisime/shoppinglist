@@ -54,6 +54,7 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
         obj.action = action;
         const dialogRef = this.dialog.open(DialogBoxComponent, {
             width: '250px',
+            height: '250px',
             data:  obj
         });
 
@@ -61,6 +62,7 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
                  .subscribe(result => {
                      if (result.event === 'Add') {
                          this.groceryTableDataSource.groceryService.addGrocery(result.data);
+                         this.groceryTableDataSource.groceryService.getGroceries();
                      } else if (result.event === 'Update') {
                          this.groceryTableDataSource.groceryService.updateGrocery(result.data);
                          // this.table.renderRows();
