@@ -1,9 +1,9 @@
 import { Injectable }                                 from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
-import { BehaviorSubject, Observable, throwError }    from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 
-import { ShoppingListAddItem, ShoppingListItem }      from './model/shopping-list-item';
+import { ShoppingListAddItem, ShoppingListItem } from './model/shopping-list-item';
 
 @Injectable({ providedIn: 'root' })
 export class ShoppingListService {
@@ -71,6 +71,7 @@ export class ShoppingListService {
                         return current.id === item.id;
                     });
                     found.name = item.name;
+                    found.amount = item.amount;
 
                     this.groceriesSubject.next(data);
                 }
