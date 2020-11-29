@@ -2,21 +2,21 @@ import { DataSource }        from '@angular/cdk/collections';
 import { MatPaginator }      from '@angular/material/paginator';
 import { MatSort }           from '@angular/material/sort';
 import { map }               from 'rxjs/operators';
-import { merge, Observable } from 'rxjs';
-import { GroceryService }    from './grocery.service';
-import { GroceryItem }       from './model/grocery-item';
+import { merge, Observable }   from 'rxjs';
+import { ShoppingListService } from './shopping-list.service';
+import { ShoppingListItem }    from './model/shopping-list-item';
 
 /**
  * Data source for the GroceryTable view. This class should
  * encapsulate all logic for fetching and manipulating the displayed data
  * (including sorting, pagination, and filtering).
  */
-export class GroceryTableDataSource extends DataSource<GroceryItem> {
+export class ShoppingListTableDatasource extends DataSource<ShoppingListItem> {
 
     paginator: MatPaginator;
     sort: MatSort;
 
-    constructor(public groceryService: GroceryService) {
+    constructor(public shoppinglistService: ShoppingListService) {
         super();
     }
 
@@ -25,17 +25,17 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
      * the returned stream emits new items.
      * @returns A stream of the items to be rendered.
      */
-    connect(): Observable<GroceryItem[]> {
+    connect(): Observable<ShoppingListItem[]> {
         // Combine everything that affects the rendered data into one update
         // stream for the data-table to consume.
         const dataMutations = [
-            this.groceryService.groceries$,
+            this.shoppinglistService.groceries$,
             this.paginator.page,
             this.sort.sortChange
         ];
 
         return merge(...dataMutations).pipe(map(() => {
-            return this.getPagedData(this.getSortedData([...this.groceryService.groceriesSubject.value]));
+            return this.getPagedData(this.getSortedData([...this.shoppinglistService.groceriesSubject.value]));
         }));
     }
 
@@ -50,7 +50,7 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
      * Paginate the data (client-side). If you're using server-side pagination,
      * this would be replaced by requesting the appropriate data from the server.
      */
-    private getPagedData(data: GroceryItem[]): GroceryItem[] {
+    private getPagedData(data: ShoppingListItem[]): ShoppingListItem[] {
         const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
         return data.splice(startIndex, this.paginator.pageSize);
     }
@@ -59,7 +59,7 @@ export class GroceryTableDataSource extends DataSource<GroceryItem> {
      * Sort the data (client-side). If you're using server-side sorting,
      * this would be replaced by requesting the appropriate data from the server.
      */
-    private getSortedData(data: GroceryItem[]): GroceryItem[] {
+    private getSortedData(data: ShoppingListItem[]): ShoppingListItem[] {
         if (!this.sort.active || this.sort.direction === '') {
             return data;
         }

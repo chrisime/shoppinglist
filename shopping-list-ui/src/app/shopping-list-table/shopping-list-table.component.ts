@@ -4,50 +4,50 @@ import { MatPaginator }                                from '@angular/material/p
 import { MatSort }                                     from '@angular/material/sort';
 import { MatTable }                                    from '@angular/material/table';
 
-import { GroceryTableDataSource } from './grocery-table-datasource';
-import { GroceryService }         from './grocery.service';
-import { GroceryItem }            from './model/grocery-item';
-import { DialogBoxComponent }     from '../dialog-box/dialog-box.component';
+import { ShoppingListTableDatasource } from './shopping-list-table-datasource';
+import { ShoppingListService }         from './shopping-list.service';
+import { ShoppingListItem }            from './model/shopping-list-item';
+import { DialogBoxComponent }  from '../dialog-box/dialog-box.component';
 
 @Component(
     {
-        selector:    'app-grocery-table',
-        templateUrl: './grocery-table.component.html',
-        styleUrls:   ['./grocery-table.component.less']
+        selector:    'app-shopping-list-table',
+        templateUrl: './shopping-list-table.component.html',
+        styleUrls:   ['./shopping-list-table.component.less']
     }
 )
-export class GroceryTableComponent implements AfterViewInit, OnInit {
+export class ShoppingListTableComponent implements AfterViewInit, OnInit {
 
     readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name', 'action', 'addButton'];
 
-    highlightedRows: GroceryItem[];
+    highlightedRows: ShoppingListItem[];
 
     @ViewChild(MatPaginator)
     private paginator: MatPaginator;
     @ViewChild(MatSort)
     private sort: MatSort;
     @ViewChild(MatTable)
-    private table: MatTable<GroceryItem>;
+    private table: MatTable<ShoppingListItem>;
 
-    private groceryTableDataSource: GroceryTableDataSource;
+    private shoppingListTableDataSource: ShoppingListTableDatasource;
 
-    constructor(private groceryService: GroceryService, private dialog: MatDialog) {
+    constructor(private shoppingListService: ShoppingListService, private dialog: MatDialog) {
         this.highlightedRows = [];
     }
 
     ngOnInit(): void {
-        this.groceryTableDataSource = new GroceryTableDataSource(this.groceryService);
-        this.groceryTableDataSource.groceryService.getGroceries();
+        this.shoppingListTableDataSource = new ShoppingListTableDatasource(this.shoppingListService);
+        this.shoppingListTableDataSource.shoppinglistService.getGroceries();
     }
 
     ngAfterViewInit(): void {
-        this.groceryTableDataSource.sort = this.sort;
-        this.groceryTableDataSource.paginator = this.paginator;
-        this.table.dataSource = this.groceryTableDataSource;
+        this.shoppingListTableDataSource.sort = this.sort;
+        this.shoppingListTableDataSource.paginator = this.paginator;
+        this.table.dataSource = this.shoppingListTableDataSource;
     }
 
     get rows(): number {
-        return this.groceryTableDataSource.groceryService.count;
+        return this.shoppingListTableDataSource.shoppinglistService.count;
     }
 
     openDialog(action: 'Add' | 'Update' | 'Delete', obj): void {
@@ -61,23 +61,23 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
         dialogRef.afterClosed()
                  .subscribe(result => {
                      if (result.event === 'Add') {
-                         this.groceryTableDataSource.groceryService.addGrocery(result.data);
-                         this.groceryTableDataSource.groceryService.getGroceries();
+                         this.shoppingListTableDataSource.shoppinglistService.addGrocery(result.data);
+                         this.shoppingListTableDataSource.shoppinglistService.getGroceries();
                      } else if (result.event === 'Update') {
-                         this.groceryTableDataSource.groceryService.updateGrocery(result.data);
+                         this.shoppingListTableDataSource.shoppinglistService.updateGrocery(result.data);
                          // this.table.renderRows();
                      } else if (result.event === 'Delete') {
                          this.deleteRowData(result.data);
                      }
                  });
     }
-    deleteRowData(rowObject: GroceryItem): void {
+    deleteRowData(rowObject: ShoppingListItem): void {
         // this.groceryTableDataSource = this.groceryTableDataSource.filter((value, key) => {
         //     return value.name !== rowObject.name;
         // });
     }
 
-    toggleRow(row: GroceryItem): void {
+    toggleRow(row: ShoppingListItem): void {
         // row.isSelected = !row.isSelected;
         if (this.highlightedRows.indexOf(row) === -1) {
             this.highlightedRows.push(row);
@@ -90,7 +90,7 @@ export class GroceryTableComponent implements AfterViewInit, OnInit {
         }
     }
 
-    isSelected(row: GroceryItem): boolean {
+    isSelected(row: ShoppingListItem): boolean {
         return this.highlightedRows.indexOf(row) !== -1;
     }
 

@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule }      from '@angular/core';
 
-import { AppRoutingModule }      from './app-routing.module';
-import { AppComponent }          from './app.component';
-import { DialogBoxComponent }    from './dialog-box/dialog-box.component';
-import { GroceryTableComponent } from './grocery-table/grocery-table.component';
+import { AppRoutingModule }           from './app-routing.module';
+import { AppComponent }               from './app.component';
+import { DialogBoxComponent }         from './dialog-box/dialog-box.component';
+import { ShoppingListTableComponent } from './shopping-list-table/shopping-list-table.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule }        from '@angular/common/http';
@@ -19,9 +19,9 @@ import { FormsModule }             from '@angular/forms';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    GroceryTableComponent,
-    DialogBoxComponent
+      AppComponent,
+      DialogBoxComponent,
+      ShoppingListTableComponent
   ],
   imports: [
     BrowserModule,

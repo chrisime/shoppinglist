@@ -1,11 +1,11 @@
 import { Injectable }                              from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { GroceryItem }                             from './model/grocery-item';
+import { BehaviorSubject, Observable, throwError }    from 'rxjs';
+import { ShoppingListItem }                           from './model/shopping-list-item';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError }                                 from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class GroceryService {
+export class ShoppingListService {
 
     private readonly api = '/api/v1/shopping-list';
     private readonly options = {
@@ -16,8 +16,8 @@ export class GroceryService {
 
     private cnt = 0;
 
-    groceriesSubject: BehaviorSubject<GroceryItem[]> = new BehaviorSubject<GroceryItem[]>([]);
-    groceries$: Observable<GroceryItem[]> = this.groceriesSubject.asObservable();
+    groceriesSubject: BehaviorSubject<ShoppingListItem[]> = new BehaviorSubject<ShoppingListItem[]>([]);
+    groceries$: Observable<ShoppingListItem[]> = this.groceriesSubject.asObservable();
 
     constructor(private httpClient: HttpClient) {
     }
@@ -41,32 +41,32 @@ export class GroceryService {
 
     getGroceries(): void {
         this.httpClient
-            .get<GroceryItem[]>(this.api, this.options)
+            .get<ShoppingListItem[]>(this.api, this.options)
             .subscribe(
-                (data: GroceryItem[]) => {
+                (data: ShoppingListItem[]) => {
                     console.log('FOOOOOOOOOOO:', data.join(','));
                     this.groceriesSubject.next(data);
                     this.cnt = data.length;
                 },
-                (error) => GroceryService.handleError(error)
+                (error) => ShoppingListService.handleError(error)
             );
     }
 
-    addGrocery(grocery: GroceryItem): void {
+    addGrocery(item: ShoppingListItem): void {
         this.httpClient
-            .post<GroceryItem>(this.api, grocery, this.options)
-            .pipe(catchError((error) => GroceryService.handleError(error)));
+            .post<ShoppingListItem>(this.api, item, this.options)
+            .pipe(catchError((error) => ShoppingListService.handleError(error)));
     }
 
-    updateGrocery(grocery: GroceryItem): void {
+    updateGrocery(item: ShoppingListItem): void {
         this.httpClient
             .get(this.api, this.options)
             .subscribe(
-                (data: GroceryItem[]) => {
+                (data: ShoppingListItem[]) => {
                     const found = data.find(current => {
-                        return current.id === grocery.id;
+                        return current.id === item.id;
                     });
-                    found.name = grocery.name;
+                    found.name = item.name;
 
                     this.groceriesSubject.next(data);
                 }
