@@ -3,7 +3,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface UsersData {
     name: string;
-    id: number;
+    amount: number;
+    id: string;
 }
 
 
@@ -16,8 +17,8 @@ export interface UsersData {
 )
 export class DialogBoxComponent {
 
-    action: string;
-    localData: any;
+    readonly action: string;
+    readonly localData: any;
 
     constructor(private dialogRef: MatDialogRef<DialogBoxComponent>, @Optional() @Inject(MAT_DIALOG_DATA) private data: UsersData) {
         // console.log(data);
