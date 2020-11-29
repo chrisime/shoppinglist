@@ -1,19 +1,38 @@
-import { Injectable }                  from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { GroceryItem }                 from './model/grocery-item';
-import { HttpClient }                  from '@angular/common/http';
+import { Injectable }                              from '@angular/core';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { GroceryItem }                             from './model/grocery-item';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { catchError }                                 from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class GroceryService {
 
-    private cnt: number;
+    private readonly api = '/api/v1/shopping-list';
+    private readonly options = {
+        responseType: 'json' as const,
+        observe:      'body' as const,
+        headers:      new HttpHeaders({ 'Content-Type': 'application/json' })
+    };
 
-    groceries$: Observable<GroceryItem[]>;
-    groceriesSubject = new BehaviorSubject<GroceryItem[]>([]);
+    private cnt = 0;
+
+    groceriesSubject: BehaviorSubject<GroceryItem[]> = new BehaviorSubject<GroceryItem[]>([]);
+    groceries$: Observable<GroceryItem[]> = this.groceriesSubject.asObservable();
 
     constructor(private httpClient: HttpClient) {
-        this.groceries$ = this.groceriesSubject.asObservable();
-        this.cnt = 0;
+    }
+
+    private static handleError(error: HttpErrorResponse): Observable<never> {
+        if (error.error instanceof ErrorEvent) {
+            // A client-side or network error occurred. Handle it accordingly.
+            console.error('An error occurred:', error.error.message);
+        } else {
+            // The backend returned an unsuccessful response code.
+            // The response body may contain clues as to what went wrong.
+            console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
+        }
+        // Return an observable with a user-facing error message.
+        return throwError('Something bad happened; please try again later.');
     }
 
     get count(): number {
@@ -22,35 +41,29 @@ export class GroceryService {
 
     getGroceries(): void {
         this.httpClient
-            .get('./assets/pantry.json')
+            .get<GroceryItem[]>(this.api, this.options)
             .subscribe(
                 (data: GroceryItem[]) => {
+                    console.log('FOOOOOOOOOOO:', data.join(','));
                     this.groceriesSubject.next(data);
                     this.cnt = data.length;
                 },
-                (error) => console.log(error)
+                (error) => GroceryService.handleError(error)
             );
     }
 
     addGrocery(grocery: GroceryItem): void {
         this.httpClient
-            .get('./assets/pantry.json')
-            .subscribe(
-                (data: GroceryItem[]) => {
-                    data.push(grocery);
-                    this.groceriesSubject.next(data);
-
-                    this.cnt++;
-                },
-                (error) => console.log(error));
+            .post<GroceryItem>(this.api, grocery, this.options)
+            .pipe(catchError((error) => GroceryService.handleError(error)));
     }
 
     updateGrocery(grocery: GroceryItem): void {
         this.httpClient
-            .get('./assets/pantry.json')
+            .get(this.api, this.options)
             .subscribe(
                 (data: GroceryItem[]) => {
-                    const found = data.find( current => {
+                    const found = data.find(current => {
                         return current.id === grocery.id;
                     });
                     found.name = grocery.name;
