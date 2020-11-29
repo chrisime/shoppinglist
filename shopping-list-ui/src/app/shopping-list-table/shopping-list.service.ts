@@ -1,8 +1,9 @@
-import { Injectable }                              from '@angular/core';
-import { BehaviorSubject, Observable, throwError }    from 'rxjs';
-import { ShoppingListItem }                           from './model/shopping-list-item';
+import { Injectable }                                 from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError }                                 from 'rxjs/operators';
+
+import { BehaviorSubject, Observable, throwError }    from 'rxjs';
+
+import { ShoppingListAddItem, ShoppingListItem }      from './model/shopping-list-item';
 
 @Injectable({ providedIn: 'root' })
 export class ShoppingListService {
@@ -44,7 +45,6 @@ export class ShoppingListService {
             .get<ShoppingListItem[]>(this.api, this.options)
             .subscribe(
                 (data: ShoppingListItem[]) => {
-                    console.log('FOOOOOOOOOOO:', data.join(','));
                     this.groceriesSubject.next(data);
                     this.cnt = data.length;
                 },
@@ -52,10 +52,14 @@ export class ShoppingListService {
             );
     }
 
-    addGrocery(item: ShoppingListItem): void {
+    addGrocery(item: ShoppingListAddItem): void {
         this.httpClient
-            .post<ShoppingListItem>(this.api, item, this.options)
-            .pipe(catchError((error) => ShoppingListService.handleError(error)));
+            .post<ShoppingListAddItem>(this.api, item, this.options)
+            .subscribe(
+                (data) => console.log('data: ', data),
+                (err) => console.log('errors already caught... will not run'),
+                () => console.log('done')
+            );
     }
 
     updateGrocery(item: ShoppingListItem): void {

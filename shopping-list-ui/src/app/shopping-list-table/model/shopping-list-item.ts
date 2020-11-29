@@ -4,3 +4,8 @@ export interface ShoppingListItem {
     amount: number;
     isSelected: boolean;
 }
+
+export interface ShoppingListAddItem {
+    readonly name: string;
+    readonly amount: number;
+}

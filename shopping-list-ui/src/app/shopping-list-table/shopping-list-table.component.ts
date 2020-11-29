@@ -63,6 +63,7 @@ export class ShoppingListTableComponent implements AfterViewInit, OnInit {
                      if (result.event === 'Add') {
                          this.shoppingListTableDataSource.shoppinglistService.addGrocery(result.data);
                          this.shoppingListTableDataSource.shoppinglistService.getGroceries();
+                         this.table.renderRows();
                      } else if (result.event === 'Update') {
                          this.shoppingListTableDataSource.shoppinglistService.updateGrocery(result.data);
                          // this.table.renderRows();
