@@ -7,7 +7,7 @@ import { MatTable }                                    from '@angular/material/t
 import { ShoppingListTableDatasource } from './shopping-list-table-datasource';
 import { ShoppingListService }         from './shopping-list.service';
 import { ShoppingListItem }            from './model/shopping-list-item';
-import { DialogBoxComponent }  from '../dialog-box/dialog-box.component';
+import { DialogBoxComponent }          from '../dialog-box/dialog-box.component';
 
 @Component(
     {
@@ -37,7 +37,7 @@ export class ShoppingListTableComponent implements AfterViewInit, OnInit {
 
     ngOnInit(): void {
         this.shoppingListTableDataSource = new ShoppingListTableDatasource(this.shoppingListService);
-        this.shoppingListTableDataSource.shoppinglistService.getGroceries();
+        this.shoppingListTableDataSource.shoppingListService.getGroceries();
     }
 
     ngAfterViewInit(): void {
@@ -47,31 +47,34 @@ export class ShoppingListTableComponent implements AfterViewInit, OnInit {
     }
 
     get rows(): number {
-        return this.shoppingListTableDataSource.shoppinglistService.count;
+        return this.shoppingListTableDataSource.shoppingListService.count;
     }
 
-    openDialog(action: 'Add' | 'Update' | 'Delete', obj): void {
+    openDialog(action: 'Add' | 'Edit' | 'Delete', obj: any): void {
         obj.action = action;
+
         const dialogRef = this.dialog.open(DialogBoxComponent, {
-            width: '250px',
-            height: '250px',
-            data:  obj
+            width:     '250px',
+            autoFocus: true,
+            data:      obj,
+            disableClose: true,
         });
 
         dialogRef.afterClosed()
                  .subscribe(result => {
                      if (result.event === 'Add') {
-                         this.shoppingListTableDataSource.shoppinglistService.addGrocery(result.data);
-                         this.shoppingListTableDataSource.shoppinglistService.getGroceries();
+                         this.shoppingListTableDataSource.shoppingListService.addGrocery(result.data);
+                         this.shoppingListTableDataSource.shoppingListService.getGroceries();
                          this.table.renderRows();
-                     } else if (result.event === 'Update') {
-                         this.shoppingListTableDataSource.shoppinglistService.updateGrocery(result.data);
+                     } else if (result.event === 'Edit') {
+                         this.shoppingListTableDataSource.shoppingListService.updateGrocery(result.data);
                          // this.table.renderRows();
                      } else if (result.event === 'Delete') {
                          this.deleteRowData(result.data);
                      }
                  });
     }
+
     deleteRowData(rowObject: ShoppingListItem): void {
         // this.groceryTableDataSource = this.groceryTableDataSource.filter((value, key) => {
         //     return value.name !== rowObject.name;
