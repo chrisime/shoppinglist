@@ -1,7 +1,7 @@
-import { DataSource }        from '@angular/cdk/collections';
-import { MatPaginator }      from '@angular/material/paginator';
-import { MatSort }           from '@angular/material/sort';
-import { map }               from 'rxjs/operators';
+import { DataSource }          from '@angular/cdk/collections';
+import { MatPaginator }        from '@angular/material/paginator';
+import { MatSort }             from '@angular/material/sort';
+import { map }                 from 'rxjs/operators';
 import { merge, Observable }   from 'rxjs';
 import { ShoppingListService } from './shopping-list.service';
 import { ShoppingListItem }    from './model/shopping-list-item';
@@ -16,7 +16,7 @@ export class ShoppingListTableDatasource extends DataSource<ShoppingListItem> {
     paginator: MatPaginator;
     sort: MatSort;
 
-    constructor(public shoppinglistService: ShoppingListService) {
+    constructor(public shoppingListService: ShoppingListService) {
         super();
     }
 
@@ -29,13 +29,13 @@ export class ShoppingListTableDatasource extends DataSource<ShoppingListItem> {
         // Combine everything that affects the rendered data into one update
         // stream for the data-table to consume.
         const dataMutations = [
-            this.shoppinglistService.groceries$,
+            this.shoppingListService.groceries$,
             this.paginator.page,
             this.sort.sortChange
         ];
 
         return merge(...dataMutations).pipe(map(() => {
-            return this.getPagedData(this.getSortedData([...this.shoppinglistService.groceriesSubject.value]));
+            return this.getPagedData(this.getSortedData([...this.shoppingListService.groceriesSubject.value]));
         }));
     }
 
