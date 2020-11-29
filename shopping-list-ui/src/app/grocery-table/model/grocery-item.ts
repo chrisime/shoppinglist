@@ -1,6 +1,6 @@
 export interface GroceryItem {
-    readonly id: number;
-    readonly amount: number;
+    readonly id: string;
     name: string;
+    amount: number;
     isSelected: boolean;
 }
