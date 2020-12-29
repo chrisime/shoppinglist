@@ -20,7 +20,7 @@ export class ShoppingListTableComponent implements AfterViewInit, OnInit {
 
     readonly displayedColumns: ReadonlyArray<string> = ['amount', 'name', 'action', 'addButton'];
 
-    highlightedRows: ShoppingListItem[];
+    highlightedRows: ShoppingListItem[] = [];
 
     @ViewChild(MatPaginator)
     private paginator: MatPaginator;
@@ -29,15 +29,15 @@ export class ShoppingListTableComponent implements AfterViewInit, OnInit {
     @ViewChild(MatTable)
     private table: MatTable<ShoppingListItem>;
 
-    private shoppingListTableDataSource: ShoppingListTableDatasource;
+    private readonly shoppingListTableDataSource: ShoppingListTableDatasource;
 
     constructor(private shoppingListService: ShoppingListService, private dialog: MatDialog) {
         this.highlightedRows = [];
+        this.shoppingListTableDataSource = new ShoppingListTableDatasource(this.shoppingListService);
     }
 
     ngOnInit(): void {
-        this.shoppingListTableDataSource = new ShoppingListTableDatasource(this.shoppingListService);
-        this.shoppingListTableDataSource.shoppingListService.getGroceries();
+        this.shoppingListService.getGroceries();
     }
 
     ngAfterViewInit(): void {
@@ -47,42 +47,34 @@ export class ShoppingListTableComponent implements AfterViewInit, OnInit {
     }
 
     get rows(): number {
-        return this.shoppingListTableDataSource.shoppingListService.count;
+        return this.shoppingListService.count;
     }
 
     openDialog(action: 'Add' | 'Edit' | 'Delete', obj: any): void {
         obj.action = action;
 
         const dialogRef = this.dialog.open(DialogBoxComponent, {
-            width:     '250px',
-            autoFocus: true,
-            data:      obj,
+            width:        '250px',
+            autoFocus:    true,
+            data:         obj,
             disableClose: true,
         });
 
         dialogRef.afterClosed()
                  .subscribe(result => {
                      if (result.event === 'Add') {
-                         this.shoppingListTableDataSource.shoppingListService.addGrocery(result.data);
-                         this.shoppingListTableDataSource.shoppingListService.getGroceries();
+                         this.shoppingListService.addItem(result.data);
                          this.table.renderRows();
                      } else if (result.event === 'Edit') {
-                         this.shoppingListTableDataSource.shoppingListService.updateGrocery(result.data);
+                         this.shoppingListService.updateItem(result.data);
                          // this.table.renderRows();
                      } else if (result.event === 'Delete') {
-                         this.deleteRowData(result.data);
+                         this.shoppingListService.removeItem(result.data);
                      }
                  });
     }
 
-    deleteRowData(rowObject: ShoppingListItem): void {
-        // this.groceryTableDataSource = this.groceryTableDataSource.filter((value, key) => {
-        //     return value.name !== rowObject.name;
-        // });
-    }
-
     toggleRow(row: ShoppingListItem): void {
-        // row.isSelected = !row.isSelected;
         if (this.highlightedRows.indexOf(row) === -1) {
             this.highlightedRows.push(row);
         } else {

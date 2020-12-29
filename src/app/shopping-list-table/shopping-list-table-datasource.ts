@@ -16,7 +16,7 @@ export class ShoppingListTableDatasource extends DataSource<ShoppingListItem> {
     paginator: MatPaginator;
     sort: MatSort;
 
-    constructor(public shoppingListService: ShoppingListService) {
+    constructor(private shoppingListService: ShoppingListService) {
         super();
     }
 
@@ -35,6 +35,7 @@ export class ShoppingListTableDatasource extends DataSource<ShoppingListItem> {
         ];
 
         return merge(...dataMutations).pipe(map(() => {
+            console.log(this.shoppingListService.groceriesSubject.getValue());
             return this.getPagedData(this.getSortedData([...this.shoppingListService.groceriesSubject.value]));
         }));
     }

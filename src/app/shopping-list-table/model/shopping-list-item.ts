@@ -1,8 +1,12 @@
+export interface ShoppingList {
+    items: ShoppingListItem[];
+}
+
 export interface ShoppingListItem {
     readonly id: string;
     name: string;
     amount: number;
-    isSelected: boolean;
+    is_selected: boolean;
 }
 
 export interface ShoppingListAddItem {

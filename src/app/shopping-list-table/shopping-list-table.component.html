@@ -32,9 +32,7 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                [ngClass]="isSelected(row) ? 'highlight' : ''"
-            ></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="isSelected(row) ? 'highlight' : ''"></tr>
             <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
         </table>
 

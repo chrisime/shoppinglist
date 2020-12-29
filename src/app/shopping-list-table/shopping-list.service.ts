@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 
-import { ShoppingListAddItem, ShoppingListItem } from './model/shopping-list-item';
+import { ShoppingList, ShoppingListAddItem, ShoppingListItem } from './model/shopping-list-item';
 
 @Injectable({ providedIn: 'root' })
 export class ShoppingListService {
@@ -30,7 +30,7 @@ export class ShoppingListService {
         } else {
             // The backend returned an unsuccessful response code.
             // The response body may contain clues as to what went wrong.
-            console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
+            console.error(`Backend returned code ${error.status}, error was: ${error.error}`);
         }
         // Return an observable with a user-facing error message.
         return throwError('Something bad happened; please try again later.');
@@ -42,36 +42,44 @@ export class ShoppingListService {
 
     getGroceries(): void {
         this.httpClient
-            .get<ShoppingListItem[]>(this.api, this.options)
+            .get<ShoppingList>(this.api, this.options)
             .subscribe(
-                (data: ShoppingListItem[]) => {
-                    this.groceriesSubject.next(data);
-                    this.cnt = data.length;
+                (data: ShoppingList) => {
+                    this.groceriesSubject.next(data.items);
+                    this.cnt = data.items.length;
                 },
                 (error) => ShoppingListService.handleError(error)
             );
     }
 
-    addGrocery(item: ShoppingListAddItem): void {
+    addItem(item: ShoppingListAddItem): void {
         this.httpClient
-            .post(this.api, item, this.options)
-            .subscribe();
+            .post<ShoppingList>(this.api, item, this.options)
+            .subscribe(
+                () => this.getGroceries(),
+                (error) => ShoppingListService.handleError(error)
+            );
     }
 
-    updateGrocery(item: ShoppingListItem): void {
+    updateItem(item: ShoppingListItem): void {
         this.httpClient
             .get(this.api, this.options)
             .subscribe(
-                (data: ShoppingListItem[]) => {
-                    const found = data.find(current => {
+                (data: ShoppingList) => {
+                    const found = data.items.find(current => {
                         return current.id === item.id;
                     });
                     found.name = item.name;
                     found.amount = item.amount;
 
-                    this.groceriesSubject.next(data);
-                }
+                    this.groceriesSubject.next(data.items);
+                },
+                (error) => ShoppingListService.handleError(error)
             );
+    }
+
+    removeItem(item: ShoppingListItem): void {
+        return;
     }
 
 }
