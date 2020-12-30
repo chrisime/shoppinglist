@@ -21,29 +21,3 @@
   * what's in the pantry and
   * what a user recently/oftentimes used/bought
 * language support (de, en, ...)
-
-## Backend
-
-### Spring Boot based
-
-* Kotlin 1.4.x
-* Microservice Architecture
-* REST API, openapi (swagger) for documentation
-* Basic Auth, JWT, OAuth2
-* eventually resilience4j
-* PostgreSQL
-* jOOQ
-* HikariCP
-* JUnit5, kotest
-
-## Frontend
-
-### Angular 10/11
-
-* material angular
-* l10n/i18n
-
-## Mobile App (later, end of Q1/2021 or sometime in Q2/2020)
-
-* flutter based (since we want to learn flutter anyway...)
-
