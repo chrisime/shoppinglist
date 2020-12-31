@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 
-import { ShoppingList, ShoppingListAddItem, ShoppingListItem } from './model/shopping-list-item';
+import { ShoppingList, ShoppingListAddItem, ShoppingListItem, ShoppingListModifyItem } from './model/shopping-list-item';
 
 @Injectable({ providedIn: 'root' })
 export class ShoppingListService {
@@ -61,25 +61,22 @@ export class ShoppingListService {
             );
     }
 
-    updateItem(item: ShoppingListItem): void {
+    updateItem(item: ShoppingListModifyItem): void {
         this.httpClient
-            .get(this.api, this.options)
+            .put<ShoppingListModifyItem>(this.api, item, this.options)
             .subscribe(
-                (data: ShoppingList) => {
-                    const found = data.items.find(current => {
-                        return current.id === item.id;
-                    });
-                    found.name = item.name;
-                    found.amount = item.amount;
-
-                    this.groceriesSubject.next(data.items);
-                },
+                () => this.getGroceries(),
                 (error) => ShoppingListService.handleError(error)
             );
     }
 
     removeItem(item: ShoppingListItem): void {
-        return;
+        this.httpClient
+            .delete<ShoppingListItem>(`${this.api}/${item.identifier}`, this.options)
+            .subscribe(
+                () => this.getGroceries(),
+                (error) => ShoppingListService.handleError(error)
+            );
     }
 
 }

@@ -3,7 +3,7 @@ export interface ShoppingList {
 }
 
 export interface ShoppingListItem {
-    readonly id: string;
+    readonly identifier: string;
     name: string;
     amount: number;
     is_selected: boolean;
@@ -12,4 +12,10 @@ export interface ShoppingListItem {
 export interface ShoppingListAddItem {
     readonly name: string;
     readonly amount: number;
+}
+
+export interface ShoppingListModifyItem {
+    readonly identifier: string;
+    name: string;
+    amount: number;
 }
